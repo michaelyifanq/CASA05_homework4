@@ -1,3 +1,8 @@
+---
+---
+---
+
+```{=html}
 <style>
   body{
   font-family: Helvetica;
@@ -5,38 +10,39 @@
   line-height:2em;
 }
 </style>
-
+```
 ## CASA0005 GIS homework 4
 
 #### Step 1 load the data
 
 first of all, load all the relevant packages.
 
-```{r 1.1 Load the packages , eval=FALSE}
+```{r 1.1 Load the packages, echo=TRUE}
 library(sf)
 library(here)
 library(janitor)
 library(tidyverse)
 ```
 
-load the shp file of `spatial data of the World` from <https://hub.arcgis.com/datasets/2b93b06dc0dc4e809d3c8db5cb96ba69_0/explore?location=-2.688200%2C0.000000%2C1.41> 
+load the shp file of `spatial data of the World` from <https://hub.arcgis.com/datasets/2b93b06dc0dc4e809d3c8db5cb96ba69_0/explore?location=-2.688200%2C0.000000%2C1.41>
 
 load the csv file of `global gender inequality data` from <http://hdr.undp.org/en/indicators/68606#>
-
 
 ```{r 1.2 Load the data, eval=FALSE}
 countries <- st_read(here("Data", "World_Countries__Generalized_.shp"))
 
-csv <- read_csv(here("Data",'Gender Inequality Index.csv'),skip=5,na = "..")
+gii_csv <- read_csv(here("Data",'Gender Inequality Index.csv'),skip=5,na = "..")
 
 ```
 
-#### Step 1 load the data
-```{r}
-gii <- csv %>%
+#### Step 2 process the data
+
+```{r 2.1 calculate inequality difference, echo=TRUE}
+gii_diff <- gii_csv %>%
   clean_names() %>%
-  select(contains('country'),contains('2010'),contains('2019'))%>%
-  mutate(inequality_difference = gii[,3]-gii[,2])
+  select(contains('country'),contains('2010'),contains('2019')) %>%
+  mutate(inequality_difference = x2019-x2010)
+
+head(gii_diff,10)
 
 ```
-
