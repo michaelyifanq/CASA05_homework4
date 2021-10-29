@@ -40,9 +40,22 @@ gii_csv <- read_csv(here("Data",'Gender Inequality Index.csv'),skip=5,na = "..")
 ```{r 2.1 calculate inequality difference, echo=TRUE}
 gii_diff <- gii_csv %>%
   clean_names() %>%
+  slice(1:189) %>%
   select(contains('country'),contains('2010'),contains('2019')) %>%
   mutate(inequality_difference = x2019-x2010)
 
 head(gii_diff,10)
 
+```
+
+After generating all of those difference, we can now join those attributes to the shapefile.
+
+```{r 2.2 Join datas, echo=TRUE}
+countries_gii <- countries %>%
+  clean_names() %>%
+  left_join(., 
+            gii_diff,
+            by = c("country" = "country"))
+
+head(countries_gii,10)
 ```
