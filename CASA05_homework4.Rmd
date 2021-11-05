@@ -31,7 +31,7 @@ load the csv file of `global gender inequality data` from <http://hdr.undp.org/e
 ```{r 1.2 Load the data, eval=FALSE}
 countries <- st_read(here("Data", "World_Countries__Generalized_.shp"))
 
-gii_csv <- read_csv(here("Data",'Gender Inequality Index.csv'),skip=5,na = "..")
+gii_csv <- read_csv(here("Data",'Gender Inequality Index.csv'),locale = locale(encoding = "latin1"),skip=5,na = "..")
 
 ```
 
@@ -45,17 +45,24 @@ gii_diff <- gii_csv %>%
   mutate(inequality_difference = x2019-x2010)
 
 head(gii_diff,10)
+```
 
+```{r 2.1 using country package to produce a iso_code, echo=TRUE}
+
+library(countrycode)
+
+gii_diff_iso <- gii_diff %>% 
+  mutate(iso_code=countrycode(country, origin = 'country.name', destination = 'iso2c'))
 ```
 
 After generating all of those difference, we can now join those attributes to the shapefile.
 
-```{r 2.2 Join datas, echo=TRUE}
+```{r 2.3 Join datas, echo=TRUE}
 countries_gii <- countries %>%
   clean_names() %>%
   left_join(., 
-            gii_diff,
-            by = c("country" = "country"))
+            gii_diff_iso,
+            by = c("aff_iso" = "iso_code"))
 
 head(countries_gii,10)
 ```
